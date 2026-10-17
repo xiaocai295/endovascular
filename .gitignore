@@ -1,0 +1,32 @@
+# --- 运行环境 / 预编译发行版（可重建，不入库）---
+.venv/
+sofa/
+
+# --- 训练产物 / 结果（体积大，不入库）---
+results/
+runs/
+
+# --- Python 缓存 ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+
+# --- 备份 / 日志 / 临时 ---
+*.bak
+*.log
+logs/
+log/
+*.tmp
+/tmp/
+
+# --- 编辑器 / 系统 ---
+.vscode/
+.idea/
+.DS_Store
+
+# --- 敏感 ---
+.env
+*.pem
+*credentials*

@@ -1,0 +1,23 @@
+# Core Python runtime for SOFA v23.06/stEVE smoke tests and baseline work.
+# Python itself must be 3.8.x because the bundled SofaPython3 ABI is CPython 3.8.
+numpy==1.23.5
+scipy==1.10.1
+pillow==10.4.0
+scikit-image==0.21.0
+pyvista==0.43.10
+vtk==9.2.6
+meshio==5.3.5
+PyOpenGL==3.1.7
+pygame==2.5.2
+matplotlib==3.7.5
+opencv-python==4.10.0.84
+gymnasium==0.29.1
+PyYAML==6.0.2
+requests==2.32.3
+wget==3.2
+
+# stEVE_rl training (active since 2026-10): torch must stay on a CPython-3.8
+# compatible build (<=2.1.x). Pick the wheel by target machine:
+#   Local CPU:    pip install torch==2.1.2 --index-url https://download.pytorch.org/whl/cpu
+#   Server GPU:   pip install torch==2.1.2 --index-url https://download.pytorch.org/whl/cu121
+#                 (or cu118) — choose matching the server's CUDA driver (nvidia-smi).
