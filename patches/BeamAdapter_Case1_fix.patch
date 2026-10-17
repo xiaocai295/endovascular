@@ -1,0 +1,48 @@
+--- a/src/BeamAdapter/component/controller/InterventionalRadiologyController.inl
++++ b/src/BeamAdapter/component/controller/InterventionalRadiologyController.inl
+@@ -868,19 +868,18 @@
+             //2. this is not the case and the node position can be interpolated using previous step positions
+         if ((xCurvAbs - std::numeric_limits<float>::epsilon()) > prev_maxCurvAbs + threshold)
+         {
+-            msg_error() << "Case 1 should never happen ==> avoid using totalLengthIsChanging! xCurvAbs = " << xCurvAbs 
++            msg_warning() << "Case 1 should never happen while using totalLengthIsChanging! xCurvAbs = " << xCurvAbs 
+                 << " > prev_maxCurvAbs = " << prev_maxCurvAbs << " + threshold: " << threshold << "\n"
+                 << "\n | newCurvAbs: " << newCurvAbs                
+                 << "\n | modifiedCurvAbs: " << modifiedCurvAbs
+                 << "\n | previous nodeCurvAbs: " << m_nodeCurvAbs;
+-            // case 1 (the abs curv is further than the previous state of the instrument)
+-            // verifier qu'il s'agit bien d'un instrument qu'on est en train de controller
+-            // interpoler toutes les positions "sorties" de l'instrument en supprimant l'ajout de dx qu'on vient de faire
++            // Fall through to interpolation below: prev_xId is clamped to the last (tip)
++            // node after the loop, so the spline extrapolates along the tip instead of
++            // leaving the node unset (the old empty branch diverged and blew up the LCP).
+         }
+-        else
+-        {
+-            // case 2 (the node position can be interpolated straightfully using previous step positions)
+-            sofa::Index prev_xId = 0;
++
++        // interpolate the node using the previous step positions
++        sofa::Index prev_xId = 0;
+             while (prev_xId < m_nodeCurvAbs.size()) // check which prev_curvAbs is above current curvAbs using threshold value
+             {
+                 if ((m_nodeCurvAbs[prev_xId] + threshold) > xCurvAbs)
+@@ -888,6 +887,10 @@
+                 prev_xId++;
+             }
+ 
++            // clamp to the last (tip) node: baryCoef > 1 extrapolates the spline forward
++            if (prev_xId >= m_nodeCurvAbs.size())
++                prev_xId = m_nodeCurvAbs.size() - 1;
++
+             sofa::Index prev_globalNodeId = prev_nbrUnactiveNode + seg_remove + prev_xId;
+             const Real prev_xCurvAbs = m_nodeCurvAbs[prev_xId];
+ 
+@@ -926,7 +929,6 @@
+                     x[globalNodeId].getOrientation() = global_H_interpol.getOrientation();
+                 }
+             }
+-        }
+     }
+     helper::AdvancedTimer::stepEnd("step3");
+ 
